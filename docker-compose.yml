@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx
+    depends_on:
+      - toxiproxy
+    ports:
+      - "9000:80"
+    volumes:
+      - ./large_file.bin:/usr/share/nginx/html/large_file.bin
+
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy
+    ports:
+      - "8474:8474"
+      - "5000-5001:5000-5001"
+
+  toxiproxy-frontend:
+    image: buckle/toxiproxy-frontend
+    environment:
+      - TOXIPROXY_URL=http://toxiproxy:8474
+    ports:
+      - "9001:8080"
+    depends_on:
+      - toxiproxy
